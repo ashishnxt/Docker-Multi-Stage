@@ -1,0 +1,21 @@
+# syntax-docker/dockerfile:l
+FROM golang:1.22 AS build
+
+WORKDIR /src
+
+# download dependencies
+COPY go.mod go.mod
+RUN go mod download
+
+# copy source files into the image
+COPY . .
+
+# build the final executable
+RUN CGO-ENABLED=0 go build -o /app .
+
+FROM scratch
+COPY --from=build /app /app
+
+# run the application
+EXPOSE 8000
+CMD ["app"]
